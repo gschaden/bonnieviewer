@@ -111,12 +111,33 @@
 1.96,1.96,test2,1,1397860444,15744M,,429,99,163763,33,62026,14,1403,84,213616,24,566.6,30,16,,,,,24457,58,+++++,+++,+++++,+++,+++++,+++,+++++,+++,+++++,+++,20138us,669ms,188ms,340ms,118ms,226ms,5784us,531us,1111us,138us,43us,74us
 </textarea>
 		<button onclick="javascript:drawCharts();">redraw</button>
+		<button onclick="javascript:makeURL();">make url</button><div id="newurl"></div>
 		<script type="text/javascript">
 			var regex1 = RegExp(/^(\d+)([mu]s)$/);
 			
 			google.load("visualization", "1", {packages:["corechart"]});
 			google.setOnLoadCallback(drawCharts);
 			
+			function getParameterByName(name) {  // Parse URL parameters
+				var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+				return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+			}
+			var url_param = getParameterByName('data');
+			if (url_param)
+				document.getElementById("data").value = "vera,verb,name,conc,stz,sz,tta,outch,outchcpu,outblk,outblkcpu,outrw,outrwcpu,inch,inchcpu,inblk,inblkcpu,seek,seekcpu,ttb,ttc,ttd,tte,ttf,sc,sccpu,sr,srcpu,sd,sdcpu,rc,rccpu,rr,rrcpu,rd,rdcpu,latoutch,latoutblk,latoutrw,latinch,latinblk,latrand,latsc,latsr,latsd,latrc,latrr,latrd\n" 
+					+url_param.replace(/\:/g, "+");  // convert : to +
+
+			function makeURL() {
+				var input = document.getElementById("data").value.replace(/\r\n/g, "\n").split("\n");
+				var input_len = input.length;
+				var output = "";
+				for (var k = 1; k < input_len; k++)
+					output += input[k].replace(/\+/g, ":") + '\n';  // convert + to :
+				output = window.location.href.split('?')[0] + '?data=' + encodeURI(output);
+				var newlink = 'new link';
+				document.getElementById('newurl').innerHTML = newlink.link(output);
+			}
+
 			function drawChart(d, t, container) {
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'Tests');
